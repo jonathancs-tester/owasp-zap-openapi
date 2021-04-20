@@ -1,0 +1,16 @@
+version: "3.3"
+services:
+  pet-zap-security-api-test:
+    image: owasp/zap2docker-stable
+    container_name: pet-owasp-zap-security
+    command:  zap-api-scan.py -t openapi/petstore.json -d -c config/gen.config -f openapi -z "-configfile wrk/config/options.prop" -r reports/owasp-zap-api-report.html
+    volumes:
+      - ./openapi:/zap/wrk/openapi:rw
+      - ./reports:/zap/wrk/reports:rw
+      - ./security:/zap/wrk/config:rw
+  pet-nikto-security-api-test:
+    image: frapsoft/nikto
+    container_name: pet-nikto-security
+    command:  -h ${BASEURL} -Cgidirs all -Display D -evasion 1 -mutate 1 -Tuning 1 -o /tmp/nikto-api-report.htm
+    volumes:
+      - ./reports:/tmp
